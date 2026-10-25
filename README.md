@@ -10,13 +10,9 @@ Screenshots use mocked weather data for layout verification; they are not live o
 
 [View the mobile dashboard](docs/dashboard-mobile.png) · [View the trip planner](docs/trip-planner.png)
 
-## Important: replace the exposed credential
-
-An OpenWeather key was committed in an earlier revision. Revoke that key in your OpenWeather account and create a replacement. The local `.env` has been cleared and removed from Git tracking; `.env.example` contains no credential. Old commits still contain the previous key. Removing a file from tracking does not remove it from repository history, and history cleanup is not a substitute for revocation. No history was rewritten by this update.
-
 ## Run locally
 
-Requires Python 3.10+ and an OpenWeather key with access to Current Weather, 5 Day / 3 Hour Forecast, and Direct Geocoding.
+After cloning or forking this repository, you need Python 3.10+ and an OpenWeather key with access to Current Weather, 5 Day / 3 Hour Forecast, and Direct Geocoding. Run the app locally first to check that everything works.
 
 ```sh
 python3 -m venv .venv
@@ -107,3 +103,9 @@ Tests mock the provider and use a frozen clock; they do not need or send an API 
 - Errors use JSON `{ "error": "..." }` with 400 (input), 404 (city), 502 (provider response), 503 (configuration/quota), or 504 (provider timeout).
 
 Data attribution: [OpenWeather](https://openweathermap.org/).
+
+---
+
+## Copyright Notice
+
+© 2026 World Weather Hub. All rights reserved. Developed by Saima Usman.
