@@ -78,11 +78,12 @@ GitHub Pages serves static files and cannot run this application's Flask weather
 For deployments gated by GitHub CI:
 
 1. Create/link a Vercel project and copy its organization/project IDs.
-2. Add repository **Actions secrets** `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID`.
-3. Add repository **Actions variable** `VERCEL_DEPLOY_ENABLED=true`.
-4. Use the workflow as the production deployment path. Disable Vercel's automatic Git production deployments if you want GitHub CI to be the gate for every production release; otherwise Git integration can deploy independently of this workflow.
+2. Create a GitHub **production environment** with a required reviewer and a deployment-branch restriction for `main`. Store the least-privilege `VERCEL_TOKEN` as an environment secret. Configure it directly in GitHub; never paste tokens into chat or source code.
+3. Add repository **Actions variables** `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`, then enable `VERCEL_DEPLOY_ENABLED=true` after the environment protection is configured.
+4. Use the workflow to stage a production build without assigning live domains. Test that staged deployment, then promote it from Vercel. Tokens are scoped to authentication steps and are not passed on command lines.
+5. Use this as the production deployment path. Disable Vercel's automatic Git production deployments if you want GitHub CI to be the gate for every production release; otherwise Git integration can deploy independently of this workflow.
 
-Pushes to `main` then run the test suite and container build before deploying the verified Vercel build. Deployment stays skipped until explicitly enabled and configured; CI still runs on pushes and pull requests. Production settings are pulled from Vercel, and `.env` files are excluded from uploads.
+Pushes to `main` then run the test suite and container build before staging the verified Vercel build. Promotion is a separate release step after verification. Deployment stays skipped until explicitly enabled and configured; CI still runs on pushes and pull requests. Production settings are pulled from Vercel, and `.env` files are excluded from uploads.
 
 Official references: [Flask on Vercel](https://vercel.com/docs/frameworks/backend/flask), [GitHub Pages hosting](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
 
