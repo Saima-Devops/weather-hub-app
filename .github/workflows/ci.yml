@@ -34,7 +34,7 @@ jobs:
       - name: Start production container
         run: |
           docker run -d --name weather-hub-ci -p 127.0.0.1:8000:8000 weather-hub:test
-          curl --retry 10 --retry-connrefused --retry-delay 1 --fail http://127.0.0.1:8000/health
+          curl --retry 10 --retry-all-errors --retry-delay 1 --connect-timeout 2 --max-time 5 --fail http://127.0.0.1:8000/health
       - name: Smoke-test production container
         run: python scripts/smoke_deployment.py http://127.0.0.1:8000
       - name: Container logs on failure
