@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+.venv
+__pycache__
+*.pyc
+tests
+.github
+docs
+output
+tmp
+.vercel
+public

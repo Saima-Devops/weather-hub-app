@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+.venv
+__pycache__
+**/__pycache__
+*.pyc
+tests
+docs
+output
+tmp
+.github
+public

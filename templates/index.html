@@ -1,97 +1,344 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>🌎 World Weather Hub</title>
-    <link rel="icon" href="https://em-content.zobj.net/source/skype/289/cloud-with-sun_26c5.png" type="image/png">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090909" />
+    <meta
+      name="description"
+      content="Current conditions and a five-day forecast, wherever your day takes you."
+    />
+    <title>World Weather Hub · Stay ahead of the Sky</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="{{ url_for('static', filename='icons/favicon-32.png', v='2') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='icons/apple-touch-icon.png', v='2') }}"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='icons/weather-hub.svg', v='2') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <script
+      defer
+      src="{{ url_for('static', filename='js/trip-planner.js') }}"
+    ></script>
+    <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="World Weather Hub home"
+          ><img
+            class="brand-icon"
+            src="{{ url_for('static', filename='icons/weather-hub.svg', v='2') }}"
+            width="64"
+            height="64"
+            alt=""
+          />
+          <span class="brand-name"
+            ><span class="brand-world">WORLD</span
+            ><span class="brand-weather">WEATHER HUB</span></span
+          ></a
+        >
+        <div class="unit-toggle" role="group" aria-label="Temperature units">
+          <button type="button" data-unit="c" aria-pressed="true">°C</button>
+          <button type="button" data-unit="f" aria-pressed="false">°F</button>
+        </div>
+      </header>
 
-<body>
-    <div class="app" role="application" style="max-width:900px; margin:0 auto; display:flex; gap:16px;">
+      <section class="intro" aria-labelledby="welcomeMsg">
+        <p class="eyebrow">A LITTLE CLARITY FOR YOUR DAY</p>
+        <h1 id="welcomeMsg">Stay ahead of the Sky</h1>
+        <p class="subtitle">
+          Real time conditions &amp; reliable forecasts, wherever your day takes
+          you
+        </p>
+      </section>
 
-        <!-- LEFT PANE -->
-        <div class="left"
-            style="display:flex; flex-direction:column; justify-content:space-between; height:600px; flex:1;">
+      <form id="searchForm" class="search-form" role="search">
+        <div class="search-field">
+          <label class="sr-only" for="locationInput">Search for a city</label>
+          <span class="search-symbol" aria-hidden="true">⌕</span>
+          <input
+            id="locationInput"
+            type="search"
+            placeholder="Search a city, anywhere"
+            maxlength="120"
+            autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="autocompleteList"
+            required
+          />
+          <ul
+            id="autocompleteList"
+            class="suggestions"
+            role="listbox"
+            aria-label="Matching cities"
+            hidden
+          ></ul>
+        </div>
+        <button id="searchBtn" class="btn primary" type="submit">
+          Search <span aria-hidden="true">↗</span>
+        </button>
+        <button id="locateBtn" class="btn secondary" type="button">
+          <span aria-hidden="true">◎</span> <span>My location</span>
+        </button>
+      </form>
+      <div
+        id="recentCities"
+        class="recent-cities"
+        aria-label="Recent cities"
+      ></div>
+      <div id="statusArea" class="status" role="status" aria-live="polite">
+        Search for a city, or use your location to get started.
+      </div>
+
+      <section id="emptyState" class="empty-state" aria-label="Get started">
+        <div class="empty-sun" aria-hidden="true">☀</div>
+        <h2>A world of weather awaits.</h2>
+        <p>
+          Find current conditions, the next 24 hours, and a five-day outlook in
+          one place.
+        </p>
+        <div class="quick-cities" aria-label="Try a city">
+          <button class="city-chip" type="button" data-city="Dubai, AE">
+            Dubai ↗
+          </button>
+          <button class="city-chip" type="button" data-city="London, GB">
+            London ↗
+          </button>
+          <button class="city-chip" type="button" data-city="Tokyo, JP">
+            Tokyo ↗
+          </button>
+        </div>
+      </section>
+
+      <div id="dashboard" hidden>
+        <div class="location-heading">
+          <div>
+            <p class="eyebrow">YOUR WEATHER, RIGHT NOW</p>
+            <h2 id="locationName"></h2>
+            <p id="localDateTime" class="muted"></p>
+          </div>
+          <span class="live-badge"
+            ><span aria-hidden="true"></span> Current conditions</span
+          >
+        </div>
+
+        <div class="overview-grid">
+          <section class="card current-card" aria-label="Current weather">
+            <div class="current-main">
+              <div>
+                <p class="card-label">Outside now</p>
+                <p id="tempValue" class="temperature"></p>
+                <p id="conditionText" class="condition"></p>
+              </div>
+              <img
+                id="conditionIcon"
+                class="current-icon"
+                alt=""
+                width="128"
+                height="128"
+              />
+            </div>
+            <div class="weather-metrics">
+              <div><span>Feels like</span><strong id="feelsLike"></strong></div>
+              <div><span>Humidity</span><strong id="humidity"></strong></div>
+              <div><span>Wind</span><strong id="wind"></strong></div>
+            </div>
+            <p id="updatedAt" class="updated"></p>
+          </section>
+          <aside class="outlook-stack">
+            <section class="card outlook-card" aria-labelledby="outlookTitle">
+              <p class="eyebrow" id="outlookTitle">THIS EVENING</p>
+              <div class="outlook-weather">
+                <img id="outlookIcon" alt="" width="64" height="64" />
+                <div>
+                  <strong id="outlookTemp"></strong>
+                  <p id="outlookCondition"></p>
+                </div>
+                <span id="outlookRain" class="rain"></span>
+              </div>
+              <p id="outlookTime" class="muted"></p>
+            </section>
+            <section class="card tip-card" aria-labelledby="tipTitle">
+              <span class="tip-icon" aria-hidden="true">🎒</span>
+              <div>
+                <h3 id="tipTitle">A note for heading out</h3>
+                <p id="recommendation"></p>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <section class="card forecast-section" aria-labelledby="hourlyHeading">
+          <div class="section-heading">
             <div>
-                <!-- Welcome Message -->
-                <h1 class="welcome" id="welcomeMsg"></h1>
-
-                <!-- Search Input -->
-                <div class="search-row" style="margin-bottom:12px">
-                    <input id="locationInput" class="input" type="text" placeholder="Type city or postcode" />
-                    <div id="autocompleteList" class="autocomplete-list"></div>
-                    <button id="searchBtn" class="btn">Search</button>
-                </div>
-
-                <!-- Status Message -->
-                <div id="statusArea" class="small-muted">
-                    Enter a location and press <strong>Search</strong>
-                </div>
-
-                <!-- Weather Result -->
-                <div id="result" style="margin-top:18px;display:none">
-                    <div class="big-temp">
-                        <div>
-                            <div class="temp-value" id="tempValue">--°C</div>
-                            <div class="small-muted" id="locationName">—</div>
-                        </div>
-                        <div class="condition-card">
-                            <img id="conditionIcon" src="" alt="weather icon" />
-                            <div id="conditionText" class="small-muted">—</div>
-                            <div class="emo" id="emo">🙂</div>
-                        </div>
-                    </div>
-
-                    <!-- Meta Info -->
-                    <div class="meta" id="metaArea">
-                        <div class="item" id="feelsLike">Feels like: —</div>
-                        <div class="item" id="humidity">Humidity: —</div>
-                        <div class="item" id="wind">Wind: —</div>
-                    </div>
-
-                    <!-- Clothing Recommendation -->
-                    <div id="recommendation" class="recommendation">—</div>
-
-                    <!-- Message -->
-                    <div class="message" id="messageText">—</div>
-                </div>
+              <p class="eyebrow">PLAN THE HOURS AHEAD</p>
+              <h2 id="hourlyHeading">Next 24 hours</h2>
             </div>
-
-
-            <div class="footer">
-                © 2025 World Weather Hub
+            <span class="muted">Every 3 hours</span>
+          </div>
+          <div
+            class="hourly-scroll"
+            tabindex="0"
+            role="region"
+            aria-label="Temperature trend and three-hour forecast; scroll horizontally"
+          >
+            <div class="hourly-content">
+              <svg
+                id="temperatureChart"
+                viewBox="0 0 800 120"
+                role="img"
+                aria-label="Temperature trend for the next 24 hours"
+                preserveAspectRatio="none"
+              ></svg>
+              <div id="hourlyForecast" class="hourly-grid"></div>
             </div>
+          </div>
+        </section>
+
+        <section class="card forecast-section" aria-labelledby="dailyHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">THE BIGGER PICTURE</p>
+              <h2 id="dailyHeading">Five-day outlook</h2>
+            </div>
+            <span class="muted">High / Low</span>
+          </div>
+          <div id="dailyForecast" class="daily-grid"></div>
+          <p class="forecast-note">
+            Rain % is the highest chance in a three-hour period. * Partial day:
+            range covers available forecast hours.
+          </p>
+        </section>
+      </div>
+
+      <section class="trip-planner card" aria-labelledby="tripHeading">
+        <div class="trip-banner">
+          <div>
+            <p class="eyebrow">A CHANGE OF SCENERY STARTS HERE</p>
+            <h2 id="tripHeading">✈️ Plan your next adventure</h2>
+            <p>
+              Good days deserve a little planning. Turn your destination into a
+              day-by-day escape.
+            </p>
+          </div>
+          <span class="trip-banner-icon" aria-hidden="true">🧳</span>
         </div>
-
-        <!-- RIGHT PANE -->
-        <div class="right"
-            style="display:flex; flex-direction:column; justify-content:flex-start; height:600px; flex:1;">
-            <div id="visual"
-                style="width:100%;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:16px">
-                <div id="scene" class="scene"></div>
-
-                <!-- Current Local Date/Time (RIGHT PANE) -->
-                <div id="localDateTime" class="small-muted"
-                    style="margin-top:10px; font-size:14px; font-weight:500; text-align:center;">
-                    <!-- JS will fill date & time here -->
-                </div>
-
-
-                <!-- Tonight / Day Forecast -->
-                <div id="tonightForecast" style="width:100%;display:none;"></div>
-
-                <!-- Travel Recommendation -->
-                <div id="travelRecommendation" class="small-muted"
-                    style="margin-top:20px; font-size:18px; padding:20px 20px; border-radius:14px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); text-align:left;">
-                </div>
+        <div class="trip-body">
+          <form id="tripForm" class="trip-form">
+            <div class="trip-field destination-field">
+              <label for="tripDestination">📍 Destination</label
+              ><input
+                id="tripDestination"
+                type="text"
+                placeholder="City, country — e.g. Dubai, AE"
+                maxlength="120"
+                required
+              /><button id="useSelectedCity" class="text-button" type="button">
+                Use searched city ↗
+              </button>
             </div>
+            <div class="trip-field">
+              <label for="tripStart">📅 Start date</label
+              ><input id="tripStart" type="date" required />
+            </div>
+            <div class="trip-field">
+              <label for="tripDays">🌅 How long?</label
+              ><select id="tripDays">
+                <option value="1">1 day</option>
+                <option value="2">2 days</option>
+                <option value="3" selected>3 days</option>
+                <option value="4">4 days</option>
+                <option value="5">5 days</option>
+              </select>
+            </div>
+            <div class="trip-field">
+              <label for="tripInterest">✨ Your travel style</label
+              ><select id="tripInterest">
+                <option value="balanced">A little of everything</option>
+                <option value="culture">🏛️ Art & culture</option>
+                <option value="food">🍜 Food & cafés</option>
+                <option value="outdoors">🌿 Fresh air & nature</option>
+                <option value="landmarks">📸 Iconic sights</option>
+              </select>
+            </div>
+            <div class="trip-field">
+              <label for="tripPace">👣 Your pace</label
+              ><select id="tripPace">
+                <option value="relaxed">Slow & easy</option>
+                <option value="full">Make the most of it</option>
+              </select>
+            </div>
+            <button class="btn primary trip-submit" type="submit">
+              Build my itinerary <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+          <p
+            id="tripStatus"
+            class="planner-status muted"
+            role="status"
+            aria-live="polite"
+          >
+            Start with a city above, or enter a destination here. You can plan
+            even without weather data.
+          </p>
+          <div id="tripResult" hidden>
+            <div class="itinerary-heading">
+              <div>
+                <p class="eyebrow">YOUR DAYS, YOUR WAY</p>
+                <h3 id="itineraryTitle"></h3>
+                <p id="itinerarySubtitle" class="muted"></p>
+              </div>
+              <button id="downloadTrip" type="button" class="btn secondary">
+                ↓ Download PDF
+              </button>
+            </div>
+            <div id="itineraryDays" class="itinerary-days"></div>
+            <p id="tripSource" class="trip-source muted"></p>
+            <p class="forecast-note">
+              Suggested stops, not reservations. Check opening days, tickets and
+              travel times before you go. Weather is used only when a forecast
+              is available for your destination and dates.
+            </p>
+          </div>
         </div>
-    </div>
+      </section>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
-
+      <footer>
+        <span
+          >© {{ copyright_year }} World Weather Hub. All rights reserved.
+          <span class="developer-credit"
+            >Developed by
+            <a
+              class="developer-name"
+              href="https://saima-devops.github.io/DevOps-Learning-Hub/about/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Saima Usman</a
+            >.</span
+          ></span
+        ><a
+          href="https://openweathermap.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Weather data by OpenWeather ↗</a
+        >
+      </footer>
+    </main>
+  </body>
 </html>
