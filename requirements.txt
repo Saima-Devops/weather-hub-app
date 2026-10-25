@@ -1,0 +1,5 @@
+# Install all dependencies
+
+Flask
+requests
+python-dotenv

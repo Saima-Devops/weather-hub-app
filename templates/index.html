@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>🌎 World Weather Hub</title>
+    <link rel="icon" href="https://em-content.zobj.net/source/skype/289/cloud-with-sun_26c5.png" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+    <div class="app" role="application" style="max-width:900px; margin:0 auto; display:flex; gap:16px;">
+
+        <!-- LEFT PANE -->
+        <div class="left"
+            style="display:flex; flex-direction:column; justify-content:space-between; height:600px; flex:1;">
+            <div>
+                <!-- Welcome Message -->
+                <h1 class="welcome" id="welcomeMsg"></h1>
+
+                <!-- Search Input -->
+                <div class="search-row" style="margin-bottom:12px">
+                    <input id="locationInput" class="input" type="text" placeholder="Type city or postcode" />
+                    <div id="autocompleteList" class="autocomplete-list"></div>
+                    <button id="searchBtn" class="btn">Search</button>
+                </div>
+
+                <!-- Status Message -->
+                <div id="statusArea" class="small-muted">
+                    Enter a location and press <strong>Search</strong>
+                </div>
+
+                <!-- Weather Result -->
+                <div id="result" style="margin-top:18px;display:none">
+                    <div class="big-temp">
+                        <div>
+                            <div class="temp-value" id="tempValue">--°C</div>
+                            <div class="small-muted" id="locationName">—</div>
+                        </div>
+                        <div class="condition-card">
+                            <img id="conditionIcon" src="" alt="weather icon" />
+                            <div id="conditionText" class="small-muted">—</div>
+                            <div class="emo" id="emo">🙂</div>
+                        </div>
+                    </div>
+
+                    <!-- Meta Info -->
+                    <div class="meta" id="metaArea">
+                        <div class="item" id="feelsLike">Feels like: —</div>
+                        <div class="item" id="humidity">Humidity: —</div>
+                        <div class="item" id="wind">Wind: —</div>
+                    </div>
+
+                    <!-- Clothing Recommendation -->
+                    <div id="recommendation" class="recommendation">—</div>
+
+                    <!-- Message -->
+                    <div class="message" id="messageText">—</div>
+                </div>
+            </div>
+
+
+            <div class="footer">
+                © 2025 World Weather Hub
+            </div>
+        </div>
+
+        <!-- RIGHT PANE -->
+        <div class="right"
+            style="display:flex; flex-direction:column; justify-content:flex-start; height:600px; flex:1;">
+            <div id="visual"
+                style="width:100%;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:16px">
+                <div id="scene" class="scene"></div>
+
+                <!-- Current Local Date/Time (RIGHT PANE) -->
+                <div id="localDateTime" class="small-muted"
+                    style="margin-top:10px; font-size:14px; font-weight:500; text-align:center;">
+                    <!-- JS will fill date & time here -->
+                </div>
+
+
+                <!-- Tonight / Day Forecast -->
+                <div id="tonightForecast" style="width:100%;display:none;"></div>
+
+                <!-- Travel Recommendation -->
+                <div id="travelRecommendation" class="small-muted"
+                    style="margin-top:20px; font-size:18px; padding:20px 20px; border-radius:14px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.1); text-align:left;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>
